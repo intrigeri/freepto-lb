@@ -5,6 +5,10 @@ if [ -r config/freepto ]; then
   echo "Reading freepto configuration file...." >&2
   . config/freepto
 fi
+if [ -r config/freepto.local ]; then
+  echo "Reading freepto local configuration file...." >&2
+  . config/freepto.local
+fi
 
 # DEFINE FUNCTION:
 _check_dependencies(){
@@ -56,38 +60,58 @@ EOF
 
 _build_packages() {
 	mkdir -p config/packages.chroot/
+	find -L pkgs -maxdepth 2 -type f -name '*.deb' -delete
 	find -L pkgs -maxdepth 1 -mindepth 1 -type d | \
 		while read pkg; do
-			_build_package "$pkg" || exit 1
-			deb=$(find "$pkg" -maxdepth 1 -type f -name '*.deb' -print0 |xargs -r0 ls -t1|head -n1)
-			if [ -z "$deb" ]; then
-				echo "deb generation failed for $pkg"
-				continue
+			_build_package "$pkg" || return 1
+			if [[ "$?" -ne 0 ]]; then
+				echo "ERROR: build for package $pkg failed" >&2
 			fi
-			mv -f "$deb" "config/packages.chroot/"
+			echo "### Installing deb for $pkg"
+			debs=$(find -L pkgs -maxdepth 2 -type f -name '*.deb' -print)
+			if [[ -z "$debs" ]]; then
+				echo "Error: after building $pkg there is no deb" >&2
+				return 2
+			fi
+            		for deb in $debs; do
+    				mv -f "$deb" "config/packages.chroot/"
+		        done
 		done
 }
 
 _build_package() {
 	olddir=$(pwd)
 	dir=$1
+	echo "### Build pkg in $dir"
 	cd "$dir"
+	set -e
+	old_proxy=$http_proxy
+	export http_proxy=
 	if [ -x make_deb ]; then
 		./make_deb
 	elif [ -f deb ]; then
 		equivs-build deb
-		#TODO: if debian/rules blabla
+	elif [ -d debian ]; then                                                
+		debuild -i -F                   
 	fi
+	http_proxy=$old_proxy
 	cd "$olddir"
 }
 
+if [[ -d pkgs/ ]]; then
+	set -o pipefail
+	echo "### Build sub-packages"
+	_build_packages 2>&1 | tee pkgs.log
+	if [ $? -ne 0 ]; then
+		echo "Error: Failure at build-packages phase" >&2
+		exit 1
+	fi
+fi
 # CREATE IMG:
-#TODO: make it optional
-_build_packages
 lb build noauto "${@}" 2>&1 | tee build.log
 
 # CREATE PERSISTENCE:
 if [ "$PERSISTENCE" -eq 1 ]; then
-    _check_dependencies 2>&1 | tee build.log
-    _persistence 2>&1 | tee build.log
+    _check_dependencies 2>&1 | tee -a build.log
+    _persistence 2>&1 | tee -a build.log
 fi

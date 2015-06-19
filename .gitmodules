@@ -1,3 +1,31 @@
+[submodule "pkgs/freepto-docs"]
+	path = pkgs/freepto-docs
+	url = https://github.com/avana-bbs/freepto-docs
+[submodule "pkgs/truecrypt-anche-no"]
+	path = pkgs/truecrypt-anche-no
+	url = https://github.com/avana-bbs/truecrypt-anche-no
+[submodule "pkgs/freepto-graphics"]
+	path = pkgs/freepto-graphics
+	url = https://github.com/avana-bbs/freepto-graphics
+[submodule "pkgs/freepto-usb-utils"]
+	path = pkgs/freepto-usb-utils
+	url = https://github.com/avana-bbs/freepto-usb-utils
+	branch = pask
+[submodule "pkgs/tortp_stem"]
+	path = pkgs/tortp_stem
+	url = https://github.com/avana-bbs/stem-tortp
+[submodule "pkgs/certificates"]
+	path = pkgs/certificates
+	url = https://github.com/AvANa-BBS/freepto-certificates.git
+[submodule "pkgs/synclient-tools"]
+	path = pkgs/synclient-tools
+	url = https://github.com/avana-bbs/synclient-tools
+[submodule "pkgs/freepto-passwords-changer"]
+	path = pkgs/freepto-passwords-changer
+	url = https://github.com/avana-bbs/freepto-passwords-changer
+[submodule "pkgs/tomb"]
+	path = pkgs/tomb
+	url = https://github.com/avana-bbs/Tomb
 [submodule "pkgs/wiperam"]
 	path = pkgs/wiperam
 	url = https://git-tails.immerda.ch/wiperam

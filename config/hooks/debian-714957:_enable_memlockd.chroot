@@ -1,0 +1,3 @@
+#!/bin/sh
+# Workaround for https://bugs.debian.org/714957
+systemctl enable memlockd.service

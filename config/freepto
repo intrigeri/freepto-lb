@@ -7,6 +7,8 @@ LINUX_FLAVOURS='amd64 486'
 LOCALE='it_IT.UTF-8'
 ZONE='Europe/Rome'
 KEYMAP='it'
+# If you leave LIVEBOOT_KEYMAP empty, it will default to KEYMAP
+LIVEBOOT_KEYMAP=
 MIRROR='http://ftp.debian.org/debian/'
 HDD_LABEL="FREEPTO"
 
@@ -15,7 +17,7 @@ GIT_HEAD="`git rev-list HEAD | head -n 1`"
 LIVE_BUILD_VERSION="`dpkg -p live-build | grep Version | awk '{print $2}'`"
 GIT_DESCRIBE="`git describe`"
 
-FREEPTO_RELEASE="1.0"
+FREEPTO_RELEASE="${$(git describe --exact-match):-dev}"
 FREEPTO_CODENAME="berenjena"
 
 # [auto/build]
